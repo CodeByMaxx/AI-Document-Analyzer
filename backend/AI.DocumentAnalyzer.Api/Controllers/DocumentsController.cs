@@ -1,61 +1,44 @@
-using AI.DocumentAnalyzer.Api.Models;
 using Microsoft.AspNetCore.Mvc;
+using AI.DocumentAnalyzer.Api.Services;
+
 
 namespace AI.DocumentAnalyzer.Api.Controllers;
+
 
 [ApiController]
 [Route("api/[controller]")]
 public class DocumentsController : ControllerBase
 {
-    private readonly IWebHostEnvironment _environment;
 
-    public DocumentsController(IWebHostEnvironment environment)
+    private readonly DocumentService _service;
+
+
+    public DocumentsController(
+        DocumentService service)
     {
-        _environment = environment;
+        _service = service;
     }
 
 
     [HttpPost("upload")]
-    public async Task<ActionResult<DocumentUploadResponse>> Upload(
+    public async Task<IActionResult> Upload(
         IFormFile file)
     {
-        if (file == null || file.Length == 0)
+
+        if (file == null)
         {
-            return BadRequest("Keine Datei ausgewählt.");
+            return BadRequest(
+                "Keine Datei erhalten");
         }
 
 
-        if (!file.FileName.EndsWith(".pdf"))
+        var fileName =
+            await _service.UploadAsync(file);
+
+
+        return Ok(new
         {
-            return BadRequest("Nur PDF Dateien erlaubt.");
-        }
-
-
-        var uploadFolder = Path.Combine(
-            _environment.ContentRootPath,
-            "Uploads");
-
-
-        Directory.CreateDirectory(uploadFolder);
-
-
-        var filePath = Path.Combine(
-            uploadFolder,
-            file.FileName);
-
-
-        using var stream = new FileStream(
-            filePath,
-            FileMode.Create);
-
-
-        await file.CopyToAsync(stream);
-
-
-        return Ok(new DocumentUploadResponse
-        {
-            FileName = file.FileName,
-            FileSize = file.Length,
+            FileName = fileName,
             Message = "Upload erfolgreich"
         });
     }

@@ -1,4 +1,10 @@
+using AI.DocumentAnalyzer.Api.Services;
+using AI.DocumentAnalyzer.Api.Storage;
+
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddScoped<DocumentService>();
+builder.Services.AddSingleton<LocalStorageService>();
 
 builder.Services.AddControllers();
 
