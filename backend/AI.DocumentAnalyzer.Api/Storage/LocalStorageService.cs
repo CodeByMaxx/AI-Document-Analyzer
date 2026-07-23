@@ -38,6 +38,6 @@ public class LocalStorageService : IStorageService
         await file.CopyToAsync(stream);
 
 
-        return fileName;
+        return filePath;
     }
 }

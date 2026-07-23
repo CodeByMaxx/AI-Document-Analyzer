@@ -1,9 +1,16 @@
 namespace AI.DocumentAnalyzer.Api.Models;
 
-public class DocumentUploadResponse
+public class Document
 {
+    public Guid Id { get; set; }
+
     public string FileName { get; set; } = string.Empty;
+
     public long FileSize { get; set; }
-    public string Message { get; set; } = string.Empty;
+
+    public DateTime UploadedAt { get; set; }
+
     public DocumentStatus Status { get; set; }
+
+    public string ExtractedText { get; set; } = string.Empty;
 }
