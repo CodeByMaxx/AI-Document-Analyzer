@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using AI.DocumentAnalyzer.Api.Services;
-
+using AI.DocumentAnalyzer.Api.Models;
 
 namespace AI.DocumentAnalyzer.Api.Controllers;
 
@@ -19,27 +19,28 @@ public class DocumentsController : ControllerBase
         _service = service;
     }
 
-
-    [HttpPost("upload")]
-    public async Task<IActionResult> Upload(
-        IFormFile file)
+   
+   [HttpPost("upload")]
+   public async Task<IActionResult> Upload(IFormFile file)
+   {
+    if (file == null)
     {
-
-        if (file == null)
-        {
-            return BadRequest(
-                "Keine Datei erhalten");
-        }
-
-
-        var fileName =
-            await _service.UploadAsync(file);
-
-
-        return Ok(new
-        {
-            FileName = fileName,
-            Message = "Upload erfolgreich"
-        });
+        return BadRequest("Keine Datei erhalten");
     }
+
+
+    var fileName = await _service.UploadAsync(file);
+
+
+    var response = new DocumentUploadResponse
+    {
+        FileName = fileName,
+        FileSize = file.Length,
+        Message = "Upload erfolgreich"
+    };
+
+
+    return Ok(response);
+}
+
 }
