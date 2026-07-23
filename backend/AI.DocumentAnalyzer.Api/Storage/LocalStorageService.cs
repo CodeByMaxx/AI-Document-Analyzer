@@ -1,8 +1,9 @@
 using Microsoft.AspNetCore.Http;
+using AI.DocumentAnalyzer.Api.Interfaces;
 
 namespace AI.DocumentAnalyzer.Api.Storage;
 
-public class LocalStorageService
+public class LocalStorageService : IStorageService
 {
     private readonly string _uploadPath;
 
