@@ -2,11 +2,13 @@ using AI.DocumentAnalyzer.Api.Interfaces;
 using AI.DocumentAnalyzer.Api.Services;
 using AI.DocumentAnalyzer.Api.Storage;
 using AI.DocumentAnalyzer.Api.Middleware;
+using AI.DocumentAnalyzer.Api.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddScoped<DocumentService>();
 builder.Services.AddSingleton<IStorageService, LocalStorageService>();
+builder.Services.AddSingleton<DocumentRepository>();
 
 builder.Services.AddControllers();
 
