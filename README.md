@@ -1246,14 +1246,8 @@ Example:
 
 ## AI Analysis Result
 
-Insert:
-
-```text
-docs/images/ai-result.png
-```
-
-Example:
-
 ![AI Analysis Result](docs/images/ai-result.png)
+
+## Without AI Analysis Result
 
 ![Without AI Analysis Result](docs/images/without-ai-result.png)
