@@ -1256,4 +1256,4 @@ Example:
 
 ![AI Analysis Result](docs/images/ai-result.png)
 
-![AI Analysis Result](docs/images/without-ai-result.png)
+![Without AI Analysis Result](docs/images/without-ai-result.png)
