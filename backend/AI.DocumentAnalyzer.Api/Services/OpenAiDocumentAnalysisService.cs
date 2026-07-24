@@ -10,7 +10,6 @@ public class OpenAiDocumentAnalysisService : IDocumentAnalysisService
 {
     private readonly ChatClient _client;
 
-
     public OpenAiDocumentAnalysisService(
         IConfiguration configuration)
     {
