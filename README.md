@@ -1244,36 +1244,6 @@ Example:
 
 ![Application Overview](docs/images/application-overview.png)
 
----
-
-## Upload Result
-
-Insert:
-
-```text
-docs/images/upload-result.png
-```
-
-Example:
-
-![Upload Result](docs/images/upload-result.png)
-
----
-
-## Extracted PDF Text
-
-Insert:
-
-```text
-docs/images/extracted-text.png
-```
-
-Example:
-
-![Extracted Text](docs/images/extracted-text.png)
-
----
-
 ## AI Analysis Result
 
 Insert:
@@ -1286,23 +1256,4 @@ Example:
 
 ![AI Analysis Result](docs/images/ai-result.png)
 
----
-
-# Recommended Screenshot Structure
-
-The final documentation should show:
-
-1. Frontend upload page
-
-2. Uploaded document information
-
-3. Extracted PDF content
-
-4. AI generated JSON analysis
-
-5. Azure resources configuration
-
-This demonstrates the complete pipeline from document upload to AI-powered analysis.
-
-
-
+![AI Analysis Result](docs/images/without-ai-result.png)
