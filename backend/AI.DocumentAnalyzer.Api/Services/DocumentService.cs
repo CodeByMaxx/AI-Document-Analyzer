@@ -10,42 +10,47 @@ public class DocumentService
     private readonly IStorageService _storage;
     private readonly IPdfTextExtractor _extractor;
     private readonly DocumentRepository _repository;
+    private readonly IDocumentAnalysisService _analysisService;
 
     public DocumentService(
     IStorageService storage,
     IPdfTextExtractor extractor,
-    DocumentRepository repository)
-    {
-     _storage = storage;
-     _extractor = extractor;
-     _repository = repository;
-    }
+    DocumentRepository repository,
+    IDocumentAnalysisService analysisService)
+{
+    _storage = storage;
+    _extractor = extractor;
+    _repository = repository;
+    _analysisService = analysisService;
+}
 
     public async Task<Document> UploadAsync(IFormFile file)
     {
-        var filePath =
-            await _storage.SaveFileAsync(file);
+    var document = new Document
+    {
+        Id = Guid.NewGuid(),
+        FileName = file.FileName,
+        FileSize = file.Length,
+        UploadedAt = DateTime.UtcNow,
+        Status = DocumentStatus.Processing
+    };
 
+    using var stream = file.OpenReadStream();
 
-        var document = new Document
-        {
-            Id = Guid.NewGuid(),
-            FileName = file.FileName,
-            FileSize = file.Length,
-            UploadedAt = DateTime.UtcNow,
-            Status = DocumentStatus.Processing
-        };
+    var extractedText =
+        await _extractor.ExtractTextAsync(stream);
 
+    var storageLocation =
+        await _storage.SaveFileAsync(file);
 
-        document.ExtractedText =
-            await _extractor.ExtractTextAsync(filePath);
+    var aiAnalysis =
+    await _analysisService.AnalyzeAsync(extractedText);
 
+    document.ExtractedText = extractedText;
+    document.AiAnalysis = aiAnalysis;
+    
+    _repository.Add(document);
 
-        document.Status =
-            DocumentStatus.Analyzed;
-
-        _repository.Add(document);
-
-        return document;
-    }
+    return document;
+   }    
 }

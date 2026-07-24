@@ -13,4 +13,8 @@ public class Document
     public DocumentStatus Status { get; set; }
 
     public string ExtractedText { get; set; } = string.Empty;
+
+    public DocumentAnalysisResult? Analysis { get; set; }
+
+    public string AiAnalysis { get; set; } = string.Empty;
 }

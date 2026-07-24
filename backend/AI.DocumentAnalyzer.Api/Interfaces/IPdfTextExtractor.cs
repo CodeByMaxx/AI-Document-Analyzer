@@ -2,5 +2,5 @@ namespace AI.DocumentAnalyzer.Api.Interfaces;
 
 public interface IPdfTextExtractor
 {
-    Task<string> ExtractTextAsync(string filePath);
+    Task<string> ExtractTextAsync(Stream stream);
 }
