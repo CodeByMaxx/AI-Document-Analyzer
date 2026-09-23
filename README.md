@@ -1,62 +1,49 @@
 # AI Document Analyzer
 
-## Application Overview
+A full-stack document processing application for uploading, extracting, and analyzing PDF documents with configurable local and Azure-based AI services.
+
+## Overview
+
+**AI Document Analyzer** combines a React frontend with an ASP.NET Core backend to provide an end-to-end document processing pipeline.
+
+The application supports:
+
+* PDF document upload
+* Document validation and storage
+* PDF text extraction
+* AI-powered document analysis
+* Structured JSON analysis results
+* Local development without cloud services
+* Azure-based document processing
+* Replaceable storage, extraction, and AI providers
+
+The architecture is designed around interfaces and dependency injection so that infrastructure implementations can be exchanged without changing the core application logic.
+
+## Application Preview
+
+### Application Overview
 
 ![Application Overview](docs/images/application-overview.png)
 
-## AI Analysis Result
+### AI Analysis Result
 
 ![AI Analysis Result](docs/images/ai-result.png)
 
-## Without AI Analysis Result
+### Without AI Analysis
 
 ![Without AI Analysis Result](docs/images/without-ai-result.png)
-## Overview
-
-AI Document Analyzer is a full-stack AI-powered document processing application.
-
-The application allows users to upload PDF documents, extract text content, and analyze documents using configurable Artificial Intelligence providers.
-
-The project demonstrates an end-to-end document processing pipeline combining:
-
-- ASP.NET Core backend development
-- React frontend development
-- Cloud service integration
-- AI model integration
-- PDF document processing
-- Modular software architecture
-
-The application supports different execution modes:
-
-- Local Mode
-- Azure Cloud Mode
-
-
-The main architectural goal is to keep infrastructure components replaceable.
-
-Storage providers, PDF extraction engines, and AI providers are implemented through interfaces and can be exchanged without changing the core application logic.
-
 
 ---
 
-# Features
+## Features
 
-## Document Upload
+### Document Upload
 
-The application allows users to upload PDF documents.
+PDF documents can be uploaded through the frontend and processed by the backend.
 
-Features:
+The processing flow is:
 
-- Upload PDF files
-- Validate uploaded documents
-- Store documents
-- Track processing status
-- Extract document text
-
-
-Processing workflow:
-
-```
+```text
 Upload
   |
   v
@@ -66,58 +53,44 @@ Processing
 Analyzed
 ```
 
+The document workflow includes:
 
----
+* PDF upload
+* Validation
+* Storage
+* Processing status tracking
+* Text extraction
+* Optional AI analysis
 
-# Document Extraction
+### PDF Text Extraction
 
-The application extracts text from PDF documents.
+PDF extraction is abstracted behind the `IPdfTextExtractor` interface.
 
-The extraction layer is implemented through an interface:
+This makes it possible to use different extraction implementations depending on the selected application mode.
 
-```
-IPdfTextExtractor
-```
+#### Local extraction
 
-
-This allows different extraction engines to be used.
-
-
-## Local PDF Extraction
-
-Technology:
-
-- iText PDF
-
+The local implementation uses **iText PDF**.
 
 Advantages:
 
-- No external services
-- Fast processing
-- Offline development
+* No external service required
+* Suitable for local development
+* Works without an Azure subscription
 
+#### Azure extraction
 
-## Azure Document Extraction
+The Azure implementation uses **Azure AI Document Intelligence**.
 
-Technology:
-
-- Azure AI Document Intelligence
-
-
-Advantages:
-
-- Cloud-based processing
-- OCR support
-- Better document understanding
-
+This provides cloud-based document processing and OCR capabilities.
 
 ---
 
-# AI Document Analysis
+## AI Document Analysis
 
-After text extraction, the document content is analyzed using an AI provider.
+After text extraction, the document content can be analyzed by an AI provider.
 
-The analysis creates structured JSON output.
+The result is returned as structured JSON.
 
 Example:
 
@@ -134,312 +107,176 @@ Example:
 }
 ```
 
+Because the analysis result is stored as JSON, the application can support different document types and analysis structures without requiring a fixed database schema for every possible result.
 
-The AI response is stored as JSON.
+Possible use cases include:
 
-This keeps the application flexible because different AI models can return different structures without changing the database schema.
-
-
----
-
-# Technology Stack
-
-## Backend
-
-- .NET 8
-- ASP.NET Core Web API
-- Dependency Injection
-- Repository Pattern
-- Swagger / OpenAPI
-
-
-## Frontend
-
-- React
-- TypeScript
-- Vite
-
-
-## Cloud Services
-
-- Microsoft Azure
-- Azure Blob Storage
-- Azure AI Document Intelligence
-- Azure OpenAI
-
-
-## Local Development
-
-Possible local providers:
-
-- Local filesystem storage
-- iText PDF extraction
-- Ollama
-- Local Language Models
-
+* CV analysis
+* Cover-letter analysis
+* Document classification
+* Skill extraction
+* Automated document processing
 
 ---
 
-# Architecture
+## Architecture
 
-The application follows a modular service-oriented architecture.
+The application is divided into several layers:
 
-The system is separated into independent components:
-
-- API Layer
-- Application Services
-- Infrastructure Services
-- External Providers
-
+* React frontend
+* ASP.NET Core API
+* Application services
+* Storage services
+* PDF extraction services
+* AI analysis services
+* External cloud providers
 
 High-level architecture:
 
-```
+```text
                          User
-
-                          |
-                          v
-
-                   React Frontend
-
-                          |
-                          v
-
-                 ASP.NET Core API
-
-                          |
-        +-----------------+------------------+
-        |                 |                  |
-        v                 v                  v
-
-
- Storage Service   PDF Extraction     AI Analysis Service
-
-
-        |                 |                  |
-        |                 |                  |
-        v                 v                  v
-
-
- Local Storage     iText Extractor    Local AI Provider
-
-
-        |
-        |
-        OR
-
-
-        v
-
-
- Azure Blob       Azure Document     Azure OpenAI
- Storage          Intelligence       Service
-
+                           |
+                           v
+                    React Frontend
+                           |
+                           v
+                  ASP.NET Core API
+                           |
+         +-----------------+------------------+
+         |                 |                  |
+         v                 v                  v
+  Storage Service    PDF Extraction    AI Analysis Service
+         |                 |                  |
+         v                 v                  v
+  Local Storage      iText Extractor    Local AI Provider
+         |
+         | OR
+         v
+  Azure Blob Storage
+                           |
+                           v
+                 Azure Document Intelligence
+                           |
+                           v
+                      Azure OpenAI
 ```
-
 
 ---
 
-# Backend Structure
+## Application Flow
 
-```
-backend/
+The complete document processing pipeline is:
 
-AI.DocumentAnalyzer.Api/
-
-├── Controllers
-│
-├── Interfaces
-│
-├── Models
-│
-├── Middleware
-│
-├── Repositories
-│
-├── Services
-│
-├── Storage
-│
-└── Program.cs
-```
-
-
----
-
-# Application Flow
-
-The complete processing pipeline:
-
-```
+```text
 User uploads PDF
-
         |
         v
-
 React Frontend
-
         |
         v
-
 ASP.NET Core API
-
         |
         v
-
 DocumentService
-
         |
         +-------------------+
         |                   |
         v                   v
-
 Storage Service      PDF Extractor
-
                             |
                             v
-
-                    Extracted Text
-
+                     Extracted Text
                             |
                             v
-
-                  AI Analysis Service
-
+                 AI Analysis Service
                             |
                             v
-
-                    JSON Result
-
+                     JSON Result
                             |
                             v
-
-                    Frontend Display
+                   Frontend Display
 ```
 
+---
 
+## Provider Architecture
 
-# Interfaces and Provider Architecture
+The application uses interfaces to separate business logic from infrastructure.
 
-The application uses interfaces to separate business logic from infrastructure implementations.
-
-This allows different providers to be exchanged without changing the application workflow.
-
-## Storage Provider
+### Storage
 
 ```text
 IStorageService
-
         |
         +-----------------------------+
         |                             |
         v                             v
-
 LocalStorageService        AzureBlobStorageService
 ```
 
-## PDF Extraction Provider
+### PDF Extraction
 
 ```text
 IPdfTextExtractor
-
         |
         +-----------------------------+
         |                             |
         v                             v
-
 PdfTextExtractorService    AzureDocumentIntelligenceService
 ```
 
-## AI Analysis Provider
+### AI Analysis
 
 ```text
 IDocumentAnalysisService
-
         |
         +-----------------------------+
         |                             |
         v                             v
-
 LocalAiDocumentAnalysisService
-
 AzureOpenAiDocumentAnalysisService
 ```
 
-The application only depends on the interfaces.
-
-The concrete implementation is selected during application startup using Dependency Injection.
+The concrete implementation is selected during application startup through dependency injection.
 
 ---
 
-# Application Modes
+## Application Modes
 
-The application supports multiple runtime modes.
+The application supports two runtime modes:
+
+* **Local**
+* **Azure**
 
 The selected mode is controlled through configuration.
 
-Available modes:
-
-* Local
-* Azure
-
----
-
-# Local Mode
+### Local Mode
 
 Local mode is intended for:
 
 * Development
 * Testing
 * Offline usage
-* Running without Azure resources
+* Development without Azure resources
 
-Architecture:
+Typical components:
 
 ```text
 React Frontend
-
-        |
-
-        v
-
+       |
+       v
 ASP.NET Core API
-
-        |
-
-        +----------------+
-
-        |                |
-
-        v                v
-
-
+       |
+       +-------------------+
+       |                   |
+       v                   v
 Local Storage       Local PDF Extraction
-
-
                            |
-
                            v
-
-
-                  Local AI Provider
+                    Local AI Provider
 ```
 
-Possible local components:
-
-* Local filesystem storage
-* iText PDF extraction
-* Ollama
-* Local Language Models
-
-Advantages:
-
-* No cloud account required
-* No API costs
-* Easy debugging
-* Works offline
-
-Configuration:
+Example configuration:
 
 ```json
 {
@@ -447,58 +284,36 @@ Configuration:
 }
 ```
 
----
+Possible local components include:
 
-# Azure Mode
+* Local filesystem storage
+* iText PDF extraction
+* Ollama
+* Local language models
 
-Azure mode uses managed cloud services.
+### Azure Mode
 
-Architecture:
+Azure mode uses managed cloud services:
 
 ```text
 React Frontend
-
-        |
-
-        v
-
+       |
+       v
 ASP.NET Core API
-
-        |
-
-        +---------------------------+
-
-        |                           |
-
-        v                           v
-
-
+       |
+       +---------------------------+
+       |                           |
+       v                           v
 Azure Blob Storage       Azure Document Intelligence
-
-
-                                        |
-
-                                        v
-
-
-                                  Azure OpenAI
-
-
-                                        |
-
-                                        v
-
-
-                              AI Analysis Result
+                                   |
+                                   v
+                              Azure OpenAI
+                                   |
+                                   v
+                          AI Analysis Result
 ```
 
-Azure services:
-
-* Azure Blob Storage
-* Azure AI Document Intelligence
-* Azure OpenAI
-
-Configuration:
+Example configuration:
 
 ```json
 {
@@ -506,62 +321,78 @@ Configuration:
 }
 ```
 
----
+Azure services used by the application include:
 
-# Dependency Injection
-
-Provider selection happens during application startup.
-
-The application checks the configured mode and registers the required implementations.
-
-Example:
-
-```csharp
-var mode =
-    builder.Configuration["ApplicationMode"];
-
-
-if(mode == "Azure")
-{
-    builder.Services.AddSingleton<
-        IStorageService,
-        AzureBlobStorageService>();
-
-    builder.Services.AddScoped<
-        IPdfTextExtractor,
-        AzureDocumentIntelligenceService>();
-
-    builder.Services.AddScoped<
-        IDocumentAnalysisService,
-        OpenAiDocumentAnalysisService>();
-}
-else
-{
-    builder.Services.AddSingleton<
-        IStorageService,
-        LocalStorageService>();
-
-    builder.Services.AddScoped<
-        IPdfTextExtractor,
-        PdfTextExtractorService>();
-
-    builder.Services.AddScoped<
-        IDocumentAnalysisService,
-        LocalAiDocumentAnalysisService>();
-}
-```
-
-This design allows switching between cloud and local execution without changing the application logic.
+* Azure Blob Storage
+* Azure AI Document Intelligence
+* Azure OpenAI
 
 ---
 
-# Configuration
+## Technology Stack
 
-The application configuration is stored in:
+### Backend
+
+* .NET 8
+* ASP.NET Core Web API
+* Dependency Injection
+* Repository Pattern
+* Swagger / OpenAPI
+
+### Frontend
+
+* React
+* TypeScript
+* Vite
+
+### Document Processing
+
+* iText PDF
+* Azure AI Document Intelligence
+
+### AI
+
+* Local AI providers
+* Ollama
+* Azure OpenAI
+
+### Cloud
+
+* Microsoft Azure
+* Azure Blob Storage
+
+---
+
+## Project Structure
 
 ```text
-appsettings.json
+AI-Document-Analyzer
+├── backend
+│   └── AI.DocumentAnalyzer.Api
+│       ├── Controllers
+│       ├── Interfaces
+│       ├── Models
+│       ├── Middleware
+│       ├── Repositories
+│       ├── Services
+│       ├── Storage
+│       └── Program.cs
+│
+├── docs
+│   └── images
+│
+├── frontend
+│   └── ai-document-analyzer
+│
+├── LICENSE
+└── README.md
 ```
+
+---
+
+## Configuration
+
+The application uses `appsettings.json` for configuration.
 
 Example:
 
@@ -587,48 +418,29 @@ Example:
 }
 ```
 
+For local development:
+
+```json
+{
+  "ApplicationMode": "Local"
+}
+```
+
 ---
 
-# Azure Setup
+## Azure Setup
 
-The Azure implementation requires three main services:
+Azure mode requires the following services:
 
 1. Azure Blob Storage
 2. Azure AI Document Intelligence
 3. Azure OpenAI
 
----
+### Azure Blob Storage
 
-# Azure Blob Storage Setup
+Create a storage account and a container for uploaded documents.
 
-Create a new Azure resource:
-
-```text
-Storage Account
-```
-
-Create a container:
-
-```text
-documents
-```
-
-Retrieve the connection string:
-
-```text
-Storage Account
-
-    |
-    +── Security + networking
-
-            |
-            +── Access keys
-
-                    |
-                    +── Connection String
-```
-
-Configuration:
+Example:
 
 ```json
 {
@@ -639,81 +451,29 @@ Configuration:
 }
 ```
 
-Uploaded PDF documents are stored inside this container.
+### Azure AI Document Intelligence
 
----
-
-# Azure AI Document Intelligence Setup
-
-Create:
-
-```text
-Azure AI Document Intelligence
-```
-
-After creation open:
-
-```text
-Keys and Endpoint
-```
-
-Copy:
-
-```text
-Endpoint
-API Key
-```
-
-Configuration:
+Create an Azure AI Document Intelligence resource and configure its endpoint and API key.
 
 ```json
 {
   "DocumentIntelligence": {
-    "Endpoint": "https://YOUR_RESOURCE.cognitiveservices.azure.com/",
+    "Endpoint": "YOUR_ENDPOINT",
     "ApiKey": "YOUR_KEY"
   }
 }
 ```
 
-The service extracts text from uploaded PDF documents.
+### Azure OpenAI
 
----
+Create an Azure OpenAI resource and deploy the model used for document analysis.
 
-# Azure OpenAI Setup
-
-Create:
-
-```text
-Azure OpenAI Resource
-```
-
-Create a model deployment.
-
-Example:
-
-```text
-Model:
-
-gpt-4.1-mini
-
-
-Deployment name:
-
-document-analyzer
-```
-
-Important:
-
-The deployment name is not the same as the model name.
-
-The application uses the deployment name.
-
-Configuration:
+The application uses the **deployment name**, not the model name, in its configuration.
 
 ```json
 {
   "AzureOpenAI": {
-    "Endpoint": "https://YOUR_RESOURCE.openai.azure.com/",
+    "Endpoint": "YOUR_ENDPOINT",
     "ApiKey": "YOUR_KEY",
     "DeploymentName": "document-analyzer"
   }
@@ -722,156 +482,101 @@ Configuration:
 
 ---
 
-# Security Configuration
+## Security
 
-Sensitive information should never be committed into Git.
+Do **not** commit credentials or secrets to the repository.
 
-Do not commit:
+Never commit:
 
-```text
-API Keys
+* API keys
+* Connection strings
+* Azure credentials
+* Access tokens
+* Other secrets
 
-Connection Strings
+For local development, use configuration files that are excluded from version control or environment variables.
 
-Azure Credentials
-
-Secrets
-```
-
-Recommended options:
-
-## Development Configuration
-
-Use:
-
-```text
-appsettings.Development.json
-```
-
-Example:
-
-```json
-{
-  "AzureOpenAI": {
-    "ApiKey": "secret"
-  }
-}
-```
-
-## Environment Variables
-
-ASP.NET Core automatically maps environment variables.
-
-Example:
+Example environment variables:
 
 ```text
 AzureOpenAI__ApiKey
-
 AzureBlobStorage__ConnectionString
-
 DocumentIntelligence__ApiKey
 ```
 
-# Backend Startup
+---
 
-The backend is implemented as an ASP.NET Core Web API application.
+## Running the Backend
 
-## Requirements
-
-Before starting the application, install:
+Requirements:
 
 * .NET 8 SDK
 * Node.js
 * npm
 
-Check installed versions:
+Check the installed versions:
 
 ```bash
 dotnet --version
-
 node --version
-
 npm --version
 ```
 
----
-
-# Starting the Backend
-
-Navigate into the backend project:
+Navigate to the backend:
 
 ```bash
 cd backend/AI.DocumentAnalyzer.Api
 ```
 
-Restore all NuGet packages:
+Restore dependencies:
 
 ```bash
 dotnet restore
 ```
 
-Build the application:
+Build:
 
 ```bash
 dotnet build
 ```
 
-Start the API:
+Run:
 
 ```bash
 dotnet run
 ```
 
-Example output:
+The API is available locally at:
 
 ```text
-Building...
-
-info: Microsoft.Hosting.Lifetime
-      Now listening on:
-      https://localhost:7001
-
-Application started.
+https://localhost:7001
 ```
-
-The API is now available.
 
 ---
 
-# Swagger API Documentation
+## Swagger API
 
-The backend provides an automatically generated Swagger interface.
+The backend provides Swagger / OpenAPI documentation.
 
-Open:
+When the backend is running, open:
 
 ```text
 https://localhost:7001/swagger
 ```
 
-Swagger allows testing all API endpoints without a separate frontend.
+Swagger can be used to inspect and test the available API endpoints.
 
-Available operations include:
-
-* Upload documents
-* Retrieve document information
-* Trigger analysis
-* View processing results
-
-Example:
+Example endpoint:
 
 ```text
 POST /api/documents/upload
 ```
 
-Uploads a PDF document into the system.
-
 ---
 
-# Starting the Frontend
+## Running the Frontend
 
-The frontend is implemented using React and TypeScript.
-
-Navigate to the frontend folder:
+Navigate to the frontend directory:
 
 ```bash
 cd frontend
@@ -889,272 +594,72 @@ Start the development server:
 npm run dev
 ```
 
-Example output:
-
-```text
-VITE ready
-
-Local:
-
-http://localhost:5173/
-```
-
-Open the application:
-
-```text
-http://localhost:5173/
-```
+The frontend is then available locally through the Vite development server.
 
 ---
 
-# Complete Development Startup
+## Development Workflow
 
-A complete local development startup consists of two running processes.
-
-## Terminal 1 - Backend
+Run the backend in one terminal:
 
 ```bash
 cd backend/AI.DocumentAnalyzer.Api
-
 dotnet run
 ```
 
-Backend:
-
-```text
-https://localhost:7001
-```
-
-## Terminal 2 - Frontend
+Run the frontend in another terminal:
 
 ```bash
 cd frontend
-
 npm install
-
 npm run dev
 ```
 
-Frontend:
+The resulting application consists of:
 
 ```text
-http://localhost:5173
+React Frontend
+      |
+      v
+ASP.NET Core API
+      |
+      v
+Document Processing
+      |
+      +-------------------+
+      |                   |
+      v                   v
+Storage             Text Extraction
+                          |
+                          v
+                    AI Analysis
+                          |
+                          v
+                    JSON Result
 ```
 
 ---
 
-# Document Processing Workflow
+## Error Handling
 
-The complete document analysis workflow:
+The API contains centralized exception handling through middleware.
 
-```text
-                User
-
-                 |
-
-                 v
-
-          React Frontend
-
-                 |
-
-                 v
-
-        Upload PDF Document
-
-                 |
-
-                 v
-
-        ASP.NET Core API
-
-                 |
-
-                 v
-
-          DocumentService
-
-                 |
-
-        +--------+---------+
-
-        |                  |
-
-        v                  v
-
-
- Storage Service     PDF Extraction
-
-
-        |                  |
-
-        |                  v
-
-        |            Extracted Text
-
-        |                  |
-
-        +--------+---------+
-
-                 |
-
-                 v
-
-       IDocumentAnalysisService
-
-                 |
-
-        +--------+---------+
-
-        |                  |
-
-        v                  v
-
-
- Local AI Provider     Azure OpenAI
-
-
-                 |
-
-                 v
-
-          JSON Analysis Result
-
-                 |
-
-                 v
-
-          Frontend Display
-```
-
----
-
-# API Response Example
-
-After uploading a document, the API returns the extracted document information.
-
-Example:
-
-```json
-{
-  "id": "86daf8d8-0fb9-4228-8198-a8b86ecae3b6",
-  "fileName": "Coverletter_Markus_Gruber.pdf",
-  "fileSize": 54624,
-  "uploadedAt": "2026-07-24T07:48:45Z",
-  "status": 2,
-  "extractedText": "MARKUS GRUBER..."
-}
-```
-
-The extracted text is stored together with the document metadata.
-
----
-
-# AI Analysis Result
-
-After AI processing, the analysis result is stored as JSON.
-
-Example:
-
-```json
-{
-  "documentType": "resume",
-  "summary": "Senior Backend Engineer with experience in scalable backend systems and AI applications.",
-  "skills": [
-    "Python",
-    "C++",
-    "Azure",
-    "Machine Learning",
-    "Distributed Systems"
-  ],
-  "experienceYears": 9.25
-}
-```
-
-The result can be used for:
-
-* CV analysis
-* Cover letter analysis
-* Document classification
-* Skill extraction
-* Automated document processing
-
----
-
-# Project Configuration Flow
-
-The application decides which provider to use during startup.
-
-Example:
-
-```text
-appsettings.json
-
-        |
-
-        v
-
-ApplicationMode
-
-        |
-
-        +----------------+
-
-        |                |
-
-        v                v
-
-
-     Local            Azure
-
-
-        |                |
-
-        v                v
-
-
-Local Services    Cloud Services
-```
-
-This allows running the same application:
-
-* Completely offline
-* With Azure cloud services
-* With different AI providers
-
-without modifying business logic.
-
----
-
-# Error Handling
-
-The API contains centralized exception handling.
-
-Architecture:
+The general flow is:
 
 ```text
 Controller
-
     |
-
     v
-
 Service Layer
-
     |
-
     v
-
 ExceptionMiddleware
-
     |
-
     v
-
 HTTP Response
 ```
 
-Unhandled exceptions are converted into consistent API responses.
+Unhandled exceptions are converted into consistent API responses without exposing internal implementation details.
 
 Example:
 
@@ -1164,61 +669,47 @@ Example:
 }
 ```
 
-This prevents internal implementation details from being exposed to clients.
-
 ---
 
-# Repository Pattern
+## Repository Pattern
 
-Database and persistence logic are separated through repositories.
-
-Example:
+Persistence logic is separated from the application services through repositories.
 
 ```text
 DocumentService
-
-        |
-
-        v
-
+       |
+       v
 DocumentRepository
-
-        |
-
-        v
-
+       |
+       v
 Database
 ```
 
-Benefits:
-
-* Cleaner business logic
-* Easier testing
-* Replaceable persistence layer
-* Better separation of concerns
+This keeps the service layer focused on application logic and makes the persistence implementation replaceable.
 
 ---
 
-# Service Responsibilities
+## Service Responsibilities
 
-## DocumentService
+### DocumentService
 
 Responsible for:
 
-* Receiving uploaded files
-* Starting extraction
+* Receiving uploaded documents
+* Starting document processing
+* Triggering text extraction
 * Triggering AI analysis
 * Updating document state
 
-## StorageService
+### StorageService
 
 Responsible for:
 
-* Saving files
-* Retrieving files
-* Managing storage location
+* Saving documents
+* Retrieving documents
+* Managing the storage location
 
-## PdfTextExtractor
+### PdfTextExtractor
 
 Responsible for:
 
@@ -1226,12 +717,30 @@ Responsible for:
 * Extracting text
 * Returning document content
 
-## DocumentAnalysisService
+### DocumentAnalysisService
 
 Responsible for:
 
-* Sending text to AI providers
+* Sending extracted text to an AI provider
 * Processing AI responses
 * Returning structured analysis results
 
 ---
+
+## Project Goals
+
+The main goals of the project are:
+
+* Demonstrate a complete document-processing pipeline
+* Separate business logic from infrastructure
+* Support both local and cloud-based execution
+* Make external providers replaceable
+* Combine modern web development with AI services
+* Provide a practical foundation for automated document analysis
+
+---
+
+## License
+
+This project is licensed under the MIT License.
+
