@@ -2,14 +2,6 @@
 
 ## Application Overview
 
-Insert:
-
-```text
-docs/images/application-overview.png
-```
-
-Example:
-
 ![Application Overview](docs/images/application-overview.png)
 
 ## AI Analysis Result
