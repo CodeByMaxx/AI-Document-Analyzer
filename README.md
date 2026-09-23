@@ -1,64 +1,49 @@
 # AI Document Analyzer
 
-A full-stack AI-powered document processing application for uploading PDF documents, extracting their content, and generating structured AI analysis results.
+An AI-powered document analysis application for extracting, processing, and understanding information from uploaded documents.
 
-The project combines a **React/TypeScript frontend** with an **ASP.NET Core Web API** and supports both local and Microsoft Azure-based processing.
-
-## Overview
-
-The application provides an end-to-end document processing pipeline:
-
-```text
-PDF Upload
-    │
-    ▼
-React Frontend
-    │
-    ▼
-ASP.NET Core API
-    │
-    ├── Document Storage
-    │
-    ├── PDF Text Extraction
-    │
-    └── AI Document Analysis
-             │
-             ▼
-       Structured JSON
-             │
-             ▼
-       Frontend Display
-```
-
-The architecture separates application logic from infrastructure providers through interfaces and dependency injection. This allows storage, PDF extraction and AI providers to be exchanged without changing the main application workflow.
+The project combines a modern web frontend with a .NET backend and AI-powered document processing services.
 
 ## Features
 
-* PDF document upload
-* Document validation and processing
-* PDF text extraction
-* AI-powered document analysis
-* Structured JSON analysis results
-* Local development mode
-* Microsoft Azure integration
-* Azure Blob Storage support
-* Azure AI Document Intelligence support
-* Azure OpenAI support
-* Swagger / OpenAPI API documentation
-* React and TypeScript frontend
-* Provider abstraction through interfaces
-* Dependency Injection
+* Document upload and analysis
+* AI-powered document understanding
+* Azure Document Intelligence integration
+* Azure OpenAI integration
+* Optional local AI processing with Ollama
+* Document text extraction
+* Structured document analysis
+* PDF processing
+* Azure Blob Storage integration
+* REST API
+* Swagger API documentation
+* Modern web interface
+
+## Architecture
+
+```text
+                    Document
+                       │
+                       ▼
+                 Web Frontend
+                       │
+                       ▼
+                 .NET Backend
+                       │
+             ┌─────────┼─────────┐
+             ▼         ▼         ▼
+       Azure Document Azure OpenAI Ollama
+       Intelligence
+             │         │         │
+             └─────────┼─────────┘
+                       ▼
+                Document Analysis
+                       │
+                       ▼
+                  Web Interface
+```
 
 ## Technology Stack
-
-### Backend
-
-* .NET 8
-* ASP.NET Core Web API
-* C#
-* Dependency Injection
-* Repository Pattern
-* Swagger / OpenAPI
 
 ### Frontend
 
@@ -66,280 +51,200 @@ The architecture separates application logic from infrastructure providers throu
 * TypeScript
 * Vite
 
+### Backend
+
+* ASP.NET Core
+* .NET 8
+* REST API
+* Swagger
+
 ### AI & Document Processing
 
-* iText PDF
-* Azure AI Document Intelligence
+* Azure Document Intelligence
 * Azure OpenAI
-* Ollama / local language models
-
-### Cloud
-
-* Microsoft Azure
-* Azure Blob Storage
-
-These technologies and providers are documented by the current repository.
-
-## Architecture
-
-The application is divided into several replaceable components:
-
-```text
-                         User
-                           │
-                           ▼
-                   React Frontend
-                           │
-                           ▼
-                  ASP.NET Core API
-                           │
-            ┌──────────────┼──────────────┐
-            │              │              │
-            ▼              ▼              ▼
-        Storage       PDF Extraction   AI Analysis
-        Service          Service         Service
-            │              │              │
-       ┌────┴────┐    ┌────┴────┐    ┌────┴────┐
-       │         │    │         │    │         │
-       ▼         ▼    ▼         ▼    ▼         ▼
-     Local     Azure  iText   Azure  Local    Azure
-    Storage    Blob           Document  AI     OpenAI
-                           Intelligence
-```
-
-Provider selection is performed during application startup based on the configured application mode.
-
-## Application Modes
-
-### Local Mode
-
-Local mode is intended for development, testing and offline usage.
-
-Possible components include:
-
-* Local filesystem storage
-* iText PDF extraction
 * Ollama
-* Local language models
+* iText
 
-Configuration:
-
-```json
-{
-  "ApplicationMode": "Local"
-}
-```
-
-### Azure Mode
-
-Azure mode uses managed cloud services:
+### Storage
 
 * Azure Blob Storage
-* Azure AI Document Intelligence
-* Azure OpenAI
-
-Configuration:
-
-```json
-{
-  "ApplicationMode": "Azure"
-}
-```
-
-Both modes use the same application interfaces, allowing the infrastructure implementation to be changed without modifying the core processing workflow.
-
-## Backend Structure
-
-```text
-backend/
-└── AI.DocumentAnalyzer.Api/
-    ├── Controllers/
-    ├── Interfaces/
-    ├── Models/
-    ├── Middleware/
-    ├── Repositories/
-    ├── Services/
-    ├── Storage/
-    └── Program.cs
-```
-
-The backend implements the document processing API and coordinates storage, extraction and AI analysis.
-
-## Frontend
-
-The frontend is implemented with React, TypeScript and Vite.
-
-```text
-frontend/
-└── ai-document-analyzer/
-```
-
-The frontend communicates with the ASP.NET Core API and displays document processing and AI analysis results.
-
-## Getting Started
-
-### Requirements
-
-Install:
-
-* .NET 8 SDK
-* Node.js
-* npm
-
-Verify the installations:
-
-```bash
-dotnet --version
-node --version
-npm --version
-```
-
-### Start the Backend
-
-```bash
-cd backend/AI.DocumentAnalyzer.Api
-
-dotnet restore
-dotnet build
-dotnet run
-```
-
-The API is configured to expose Swagger/OpenAPI documentation during development.
-
-### Start the Frontend
-
-From the frontend project:
-
-```bash
-cd frontend/ai-document-analyzer
-
-npm install
-npm run dev
-```
-
-The Vite development server then provides the frontend locally.
-
-## Configuration
-
-Application settings are stored in `appsettings.json`.
-
-A typical Azure configuration contains:
-
-```json
-{
-  "ApplicationMode": "Azure",
-
-  "AzureBlobStorage": {
-    "ConnectionString": "",
-    "ContainerName": "documents"
-  },
-
-  "DocumentIntelligence": {
-    "Endpoint": "",
-    "ApiKey": ""
-  },
-
-  "AzureOpenAI": {
-    "Endpoint": "",
-    "ApiKey": "",
-    "DeploymentName": ""
-  }
-}
-```
-
-**Never commit API keys, connection strings or other secrets to the repository.**
-
-Environment variables can be used for sensitive configuration values.
-
-## API
-
-The backend exposes a REST API for document processing.
-
-Swagger/OpenAPI can be used to inspect and test the available endpoints.
-
-Example endpoint:
-
-```text
-POST /api/documents/upload
-```
-
-The upload workflow stores the document, extracts its text and makes the content available for further AI analysis.
-
-## AI Analysis
-
-After text extraction, the document content is passed to the configured AI analysis provider.
-
-The result is returned as structured JSON, for example:
-
-```json
-{
-  "documentType": "resume",
-  "summary": "Senior Backend Engineer with experience in AI systems.",
-  "skills": [
-    "Python",
-    "C++",
-    "Azure"
-  ],
-  "experienceYears": 9.25
-}
-```
-
-This structure can be used for use cases such as:
-
-* CV analysis
-* Cover-letter analysis
-* Document classification
-* Skill extraction
-* Automated document processing
-
-The repository currently documents both local AI processing and Azure OpenAI as supported analysis approaches.
-
-## Security
-
-Sensitive credentials should not be committed to Git.
-
-Do not commit:
-
-```text
-API keys
-Connection strings
-Azure credentials
-Secrets
-```
-
-Use development configuration files or environment variables instead.
 
 ## Project Structure
 
 ```text
 AI-Document-Analyzer/
-├── backend/
-│   └── AI.DocumentAnalyzer.Api/
-│
 ├── frontend/
-│   └── ai-document-analyzer/
-│
+├── backend/
 ├── docs/
 │   └── images/
-│
-├── .gitignore
-├── LICENSE
 └── README.md
 ```
 
-The current repository contains the backend, frontend, documentation images, license and README at the project root.
+The repository contains separate frontend and backend components together with documentation images used to demonstrate the application.
 
-## Screenshots
+## Frontend
 
-The repository contains documentation images under:
+The frontend provides the user interface for uploading and analysing documents.
+
+The application is built with:
+
+* React
+* TypeScript
+* Vite
+
+The frontend communicates with the backend through the REST API.
+
+## Backend
+
+The backend is implemented using ASP.NET Core and .NET 8.
+
+It provides the API layer connecting the frontend with the document-processing and AI services.
+
+## Document Processing
+
+The application can use Azure Document Intelligence to extract structured information from supported documents.
+
+The extracted information can then be passed to an AI model for additional analysis and interpretation.
+
+```text
+Document
+   │
+   ▼
+Document Intelligence
+   │
+   ▼
+Extracted Content
+   │
+   ▼
+AI Analysis
+   │
+   ▼
+Structured Result
+```
+
+## Azure OpenAI
+
+Azure OpenAI can be used to process extracted document content and generate AI-based analysis.
+
+This allows the application to combine document extraction with natural-language processing.
+
+## Ollama
+
+Ollama provides an option for local AI model execution.
+
+This can be useful during development when testing AI functionality without relying exclusively on a cloud-based model.
+
+## PDF Processing
+
+The backend uses iText for PDF-related processing.
+
+This allows PDF documents to be handled as part of the document-analysis workflow.
+
+## Azure Blob Storage
+
+Azure Blob Storage can be used for storing uploaded documents and related files.
+
+A simplified storage workflow is:
+
+```text
+Upload
+  │
+  ▼
+Backend
+  │
+  ▼
+Azure Blob Storage
+  │
+  ▼
+Document Processing
+```
+
+## API
+
+The backend exposes a REST API for communication with the frontend.
+
+Swagger can be used to inspect and interact with the available API endpoints during development.
+
+## Results & Screenshots
+
+The repository contains screenshots under:
 
 ```text
 docs/images/
 ```
 
-These can be used here to showcase the application UI and AI analysis results.
+These images are part of the project documentation and demonstrate the application's user interface and workflow.
 
-## License
+They should remain part of the README because they provide a visual representation of the finished application.
 
-This project is licensed under the **MIT License**. A `LICENSE` file is present in the repository.
+![AI Document Analyzer](docs/images/README.png)
+
+## Development
+
+### Frontend
+
+Install the frontend dependencies and start the Vite development server using the project's frontend configuration.
+
+### Backend
+
+Restore the .NET dependencies and start the ASP.NET Core application using the project's backend configuration.
+
+Once the backend is running, Swagger can be used to inspect the available API endpoints.
+
+## Configuration
+
+Cloud services and AI models require appropriate configuration values.
+
+Credentials and API keys should not be committed to the repository.
+
+Use environment variables or the configuration mechanisms provided by the development environment.
+
+## AI Workflow
+
+The complete document-analysis workflow can be summarized as:
+
+```text
+User Upload
+    │
+    ▼
+Frontend
+    │
+    ▼
+ASP.NET Core API
+    │
+    ▼
+Document Extraction
+    │
+    ▼
+AI Processing
+    │
+    ▼
+Analysis Result
+    │
+    ▼
+Frontend
+```
+
+## Possible Improvements
+
+Possible future extensions include:
+
+* Additional document formats
+* More AI analysis workflows
+* Improved document search
+* Additional extraction models
+* Authentication and user accounts
+* More detailed result visualizations
+* Automated integration tests
+* Additional cloud deployment options
+
+## Project Purpose
+
+The project demonstrates how modern web technologies, document intelligence, and generative AI can be combined into a practical document-analysis application.
+
+It connects a React frontend with an ASP.NET Core backend and external AI/document-processing services.
+
+## Author
+
+**Markus**
 
