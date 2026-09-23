@@ -1,7 +1,24 @@
 # AI Document Analyzer
 
-![AI Document Analyzer](docs/images/hero.png)
+## Application Overview
 
+Insert:
+
+```text
+docs/images/application-overview.png
+```
+
+Example:
+
+![Application Overview](docs/images/application-overview.png)
+
+## AI Analysis Result
+
+![AI Analysis Result](docs/images/ai-result.png)
+
+## Without AI Analysis Result
+
+![Without AI Analysis Result](docs/images/without-ai-result.png)
 ## Overview
 
 AI Document Analyzer is a full-stack AI-powered document processing application.
@@ -16,7 +33,6 @@ The project demonstrates an end-to-end document processing pipeline combining:
 - AI model integration
 - PDF document processing
 - Modular software architecture
-
 
 The application supports different execution modes:
 
@@ -1227,27 +1243,3 @@ Responsible for:
 * Returning structured analysis results
 
 ---
-
-# Screenshots
-
-Recommended screenshots for the project documentation:
-
-## Application Overview
-
-Insert:
-
-```text
-docs/images/application-overview.png
-```
-
-Example:
-
-![Application Overview](docs/images/application-overview.png)
-
-## AI Analysis Result
-
-![AI Analysis Result](docs/images/ai-result.png)
-
-## Without AI Analysis Result
-
-![Without AI Analysis Result](docs/images/without-ai-result.png)
