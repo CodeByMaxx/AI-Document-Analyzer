@@ -1,259 +1,345 @@
-# GStreamer Sync Overlay
+# AI Document Analyzer
 
-A C++17 example demonstrating how to synchronize video frames with independently generated detection results using **GStreamer timestamps**.
+A full-stack AI-powered document processing application for uploading PDF documents, extracting their content, and generating structured AI analysis results.
 
-The project simulates a camera stream and an AI detection pipeline. Detection results are matched to video frames based on their Presentation Timestamps (PTS) and rendered as bounding boxes using GStreamer's `cairooverlay`.
+The project combines a **React/TypeScript frontend** with an **ASP.NET Core Web API** and supports both local and Microsoft Azure-based processing.
+
+## Overview
+
+The application provides an end-to-end document processing pipeline:
+
+```text
+PDF Upload
+    │
+    ▼
+React Frontend
+    │
+    ▼
+ASP.NET Core API
+    │
+    ├── Document Storage
+    │
+    ├── PDF Text Extraction
+    │
+    └── AI Document Analysis
+             │
+             ▼
+       Structured JSON
+             │
+             ▼
+       Frontend Display
+```
+
+The architecture separates application logic from infrastructure providers through interfaces and dependency injection. This allows storage, PDF extraction and AI providers to be exchanged without changing the main application workflow.
 
 ## Features
 
-* Simulated camera producing RGB video frames
-* GStreamer `appsrc` pipeline
-* 30 FPS video stream at 640×480
-* Presentation Timestamp (PTS) handling
-* Independent detection thread
-* Timestamp-based detection matching
-* Configurable timestamp tolerance
-* Bounding-box rendering with `cairooverlay`
-* Unit tests for synchronization logic
+* PDF document upload
+* Document validation and processing
+* PDF text extraction
+* AI-powered document analysis
+* Structured JSON analysis results
+* Local development mode
+* Microsoft Azure integration
+* Azure Blob Storage support
+* Azure AI Document Intelligence support
+* Azure OpenAI support
+* Swagger / OpenAPI API documentation
+* React and TypeScript frontend
+* Provider abstraction through interfaces
+* Dependency Injection
 
-## Pipeline
+## Technology Stack
 
-```text
-DummyCamera
-     |
-     | RGB frames + PTS
-     v
-   appsrc
-     |
-     v
- videoconvert
-     |
-     v
-cairooverlay <---- Detection results
-     |
-     v
- videoconvert
-     |
-     v
-autovideosink
-```
+### Backend
 
-The camera and detection pipeline operate independently. The overlay uses timestamps to find the detection result that best matches the current video frame.
+* .NET 8
+* ASP.NET Core Web API
+* C#
+* Dependency Injection
+* Repository Pattern
+* Swagger / OpenAPI
 
-## How Synchronization Works
+### Frontend
 
-Each video frame receives a **Presentation Timestamp (PTS)** when it is generated.
+* React
+* TypeScript
+* Vite
 
-For example:
+### AI & Document Processing
 
-```text
-Frame 1 -> PTS = 1000 ms
-Frame 2 -> PTS = 1033 ms
-Frame 3 -> PTS = 1066 ms
-```
+* iText PDF
+* Azure AI Document Intelligence
+* Azure OpenAI
+* Ollama / local language models
 
-The detection thread also assigns timestamps to its results:
+### Cloud
 
-```text
-Detection 1 -> PTS = 1015 ms
-Detection 2 -> PTS = 1062 ms
-Detection 3 -> PTS = 1098 ms
-```
+* Microsoft Azure
+* Azure Blob Storage
 
-When `cairooverlay` processes a video frame, the implementation searches for the detection with the closest timestamp.
+These technologies and providers are documented by the current repository.
 
-For a frame at `1066 ms`:
+## Architecture
+
+The application is divided into several replaceable components:
 
 ```text
-Current frame:      1066 ms
-
-Available detections:
-1015 ms
-1062 ms  <-- selected
-1098 ms
+                         User
+                           │
+                           ▼
+                   React Frontend
+                           │
+                           ▼
+                  ASP.NET Core API
+                           │
+            ┌──────────────┼──────────────┐
+            │              │              │
+            ▼              ▼              ▼
+        Storage       PDF Extraction   AI Analysis
+        Service          Service         Service
+            │              │              │
+       ┌────┴────┐    ┌────┴────┐    ┌────┴────┐
+       │         │    │         │    │         │
+       ▼         ▼    ▼         ▼    ▼         ▼
+     Local     Azure  iText   Azure  Local    Azure
+    Storage    Blob           Document  AI     OpenAI
+                           Intelligence
 ```
 
-If the timestamp difference is within the configured tolerance, the corresponding bounding boxes are rendered. The current implementation uses a tolerance of **200 ms**.
+Provider selection is performed during application startup based on the configured application mode.
 
-This approach demonstrates how video and asynchronous inference results can remain synchronized even when the detection process introduces variable latency.
+## Application Modes
 
-## Components
+### Local Mode
 
-### DummyCamera
+Local mode is intended for development, testing and offline usage.
 
-`DummyCamera` simulates a camera source.
+Possible components include:
 
-It:
+* Local filesystem storage
+* iText PDF extraction
+* Ollama
+* Local language models
 
-* Generates 640×480 RGB frames
-* Produces frames at 30 FPS
-* Assigns Presentation Timestamps
-* Pushes frames to the video source
+Configuration:
 
-### VideoSource
+```json
+{
+  "ApplicationMode": "Local"
+}
+```
 
-`VideoSource` manages the GStreamer pipeline.
+### Azure Mode
 
-Its responsibilities include:
+Azure mode uses managed cloud services:
 
-* Creating the GStreamer elements
-* Connecting the pipeline
-* Pushing frames through `appsrc`
-* Preserving frame timestamps
+* Azure Blob Storage
+* Azure AI Document Intelligence
+* Azure OpenAI
 
-### Overlay
+Configuration:
 
-The overlay uses GStreamer's `cairooverlay`.
+```json
+{
+  "ApplicationMode": "Azure"
+}
+```
 
-It:
+Both modes use the same application interfaces, allowing the infrastructure implementation to be changed without modifying the core processing workflow.
 
-* Stores detection results
-* Compares detection timestamps with video-frame timestamps
-* Selects the closest matching detection
-* Draws the corresponding bounding boxes
+## Backend Structure
 
-## Requirements
+```text
+backend/
+└── AI.DocumentAnalyzer.Api/
+    ├── Controllers/
+    ├── Interfaces/
+    ├── Models/
+    ├── Middleware/
+    ├── Repositories/
+    ├── Services/
+    ├── Storage/
+    └── Program.cs
+```
 
-* C++17
-* CMake 3.16 or newer
-* GStreamer 1.0
-* GStreamer Base Plugins
-* Cairo
-* GoogleTest
+The backend implements the document processing API and coordinates storage, extraction and AI analysis.
 
-## Install Dependencies
+## Frontend
 
-On Ubuntu:
+The frontend is implemented with React, TypeScript and Vite.
+
+```text
+frontend/
+└── ai-document-analyzer/
+```
+
+The frontend communicates with the ASP.NET Core API and displays document processing and AI analysis results.
+
+## Getting Started
+
+### Requirements
+
+Install:
+
+* .NET 8 SDK
+* Node.js
+* npm
+
+Verify the installations:
 
 ```bash
-sudo apt update
-
-sudo apt install \
-    build-essential \
-    cmake \
-    libgstreamer1.0-dev \
-    libgstreamer-plugins-base1.0-dev \
-    libcairo2-dev \
-    libgtest-dev
+dotnet --version
+node --version
+npm --version
 ```
 
-## Build
-
-Clone the repository:
+### Start the Backend
 
 ```bash
-git clone https://github.com/CodeByMaxx/gstreamer-sync.git
-cd gstreamer-sync
+cd backend/AI.DocumentAnalyzer.Api
+
+dotnet restore
+dotnet build
+dotnet run
 ```
 
-Create a build directory:
+The API is configured to expose Swagger/OpenAPI documentation during development.
+
+### Start the Frontend
+
+From the frontend project:
 
 ```bash
-mkdir build
-cd build
+cd frontend/ai-document-analyzer
+
+npm install
+npm run dev
 ```
 
-Configure and build:
+The Vite development server then provides the frontend locally.
 
-```bash
-cmake ..
-cmake --build . -j$(nproc)
+## Configuration
+
+Application settings are stored in `appsettings.json`.
+
+A typical Azure configuration contains:
+
+```json
+{
+  "ApplicationMode": "Azure",
+
+  "AzureBlobStorage": {
+    "ConnectionString": "",
+    "ContainerName": "documents"
+  },
+
+  "DocumentIntelligence": {
+    "Endpoint": "",
+    "ApiKey": ""
+  },
+
+  "AzureOpenAI": {
+    "Endpoint": "",
+    "ApiKey": "",
+    "DeploymentName": ""
+  }
+}
 ```
 
-## Run
+**Never commit API keys, connection strings or other secrets to the repository.**
 
-After building, start the application with:
+Environment variables can be used for sensitive configuration values.
 
-```bash
-./overlay
+## API
+
+The backend exposes a REST API for document processing.
+
+Swagger/OpenAPI can be used to inspect and test the available endpoints.
+
+Example endpoint:
+
+```text
+POST /api/documents/upload
 ```
 
-A video window should open displaying the generated frames together with synchronized bounding boxes.
+The upload workflow stores the document, extracts its text and makes the content available for further AI analysis.
 
-## Tests
+## AI Analysis
 
-Run the unit tests from the build directory:
+After text extraction, the document content is passed to the configured AI analysis provider.
 
-```bash
-ctest --verbose
+The result is returned as structured JSON, for example:
+
+```json
+{
+  "documentType": "resume",
+  "summary": "Senior Backend Engineer with experience in AI systems.",
+  "skills": [
+    "Python",
+    "C++",
+    "Azure"
+  ],
+  "experienceYears": 9.25
+}
 ```
 
-The current test suite covers:
+This structure can be used for use cases such as:
 
-* Detection timestamp matching
-* Detection timeout handling
-* Selection of the closest detection
+* CV analysis
+* Cover-letter analysis
+* Document classification
+* Skill extraction
+* Automated document processing
+
+The repository currently documents both local AI processing and Azure OpenAI as supported analysis approaches.
+
+## Security
+
+Sensitive credentials should not be committed to Git.
+
+Do not commit:
+
+```text
+API keys
+Connection strings
+Azure credentials
+Secrets
+```
+
+Use development configuration files or environment variables instead.
 
 ## Project Structure
 
 ```text
-gstreamer-sync/
-├── src/
-│   ├── main.cpp
-│   ├── VideoSource.hpp
-│   ├── Overlay.hpp
-│   └── DummyCamera.hpp
+AI-Document-Analyzer/
+├── backend/
+│   └── AI.DocumentAnalyzer.Api/
 │
-├── tests/
-│   └── OverlayTest.cpp
+├── frontend/
+│   └── ai-document-analyzer/
 │
-├── CMakeLists.txt
-├── Picture1.png
-├── Picture2.png
-├── Picture3.png
-├── Picture4.png
+├── docs/
+│   └── images/
+│
+├── .gitignore
+├── LICENSE
 └── README.md
 ```
 
-The repository currently contains four image files that can be used to document the project visually.
-
-## Example
-
-The core idea of the project can be summarized as:
-
-```text
-Camera frames
-     |
-     | PTS
-     v
-  GStreamer
-     |
-     |-------------------|
-     |                   |
-     v                   v
- Video frame       Detection result
-     |                   |
-     |       timestamp   |
-     |<------------------|
-     |
-     v
- Timestamp matching
-     |
-     v
- Bounding box overlay
-```
-
-The important part is that the detection result does not need to arrive at exactly the same time as the corresponding video frame. Instead, both streams are associated using timestamps.
-
-## Goal
-
-The project provides a small and focused example for building real-time video pipelines where camera frames and asynchronous AI inference results need to be synchronized.
-
-The same synchronization concept can be applied to real camera streams and external object-detection or machine-learning pipelines.
+The current repository contains the backend, frontend, documentation images, license and README at the project root.
 
 ## Screenshots
 
-The repository contains four example images:
+The repository contains documentation images under:
 
-![GStreamer Sync](Picture1.png)
+```text
+docs/images/
+```
 
-![GStreamer Sync](Picture2.png)
-
-![GStreamer Sync](Picture3.png)
-
-![GStreamer Sync](Picture4.png)
+These can be used here to showcase the application UI and AI analysis results.
 
 ## License
 
-No license file is currently visible in the repository root. If this project is intended to be distributed as open-source software, an appropriate `LICENSE` file should be added.
+This project is licensed under the **MIT License**. A `LICENSE` file is present in the repository.
 
