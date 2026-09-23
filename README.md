@@ -22,25 +22,28 @@ The project combines a modern web frontend with a .NET backend and AI-powered do
 ## Architecture
 
 ```text
-                    Document
-                       │
-                       ▼
-                 Web Frontend
-                       │
-                       ▼
-                 .NET Backend
-                       │
-             ┌─────────┼─────────┐
-             ▼         ▼         ▼
-       Azure Document Azure OpenAI Ollama
-       Intelligence
-             │         │         │
-             └─────────┼─────────┘
-                       ▼
-                Document Analysis
-                       │
-                       ▼
-                  Web Interface
+Document
+    │
+    ▼
+Web Frontend
+    │
+    ▼
+.NET Backend
+    │
+    ├──► Azure Document Intelligence
+    │
+    ├──► Azure OpenAI
+    │
+    └──► Ollama
+    │
+    ▼
+Document Analysis
+    │
+    ▼
+Analysis Result
+    │
+    ▼
+Web Interface
 ```
 
 ## Technology Stack
@@ -73,20 +76,21 @@ The project combines a modern web frontend with a .NET backend and AI-powered do
 
 ```text
 AI-Document-Analyzer/
-├── frontend/
-├── backend/
 ├── docs/
 │   └── images/
+│       ├── ai-result.png
+│       ├── without-ai-result.png
+│       └── application-overview.png
+├── frontend/
+├── backend/
 └── README.md
 ```
-
-The repository contains separate frontend and backend components together with documentation images used to demonstrate the application.
 
 ## Frontend
 
 The frontend provides the user interface for uploading and analysing documents.
 
-The application is built with:
+It is built with:
 
 * React
 * TypeScript
@@ -144,8 +148,6 @@ This allows PDF documents to be handled as part of the document-analysis workflo
 
 Azure Blob Storage can be used for storing uploaded documents and related files.
 
-A simplified storage workflow is:
-
 ```text
 Upload
   │
@@ -163,21 +165,23 @@ Document Processing
 
 The backend exposes a REST API for communication with the frontend.
 
-Swagger can be used to inspect and interact with the available API endpoints during development.
+Swagger can be used during development to inspect and interact with the available API endpoints.
 
 ## Results & Screenshots
 
-The repository contains screenshots under:
+The screenshots below show the actual application and the difference between document processing with and without AI analysis.
 
-```text
-docs/images/
-```
+### Application Overview
 
-These images are part of the project documentation and demonstrate the application's user interface and workflow.
+![Application Overview](docs/images/application-overview.png)
 
-They should remain part of the README because they provide a visual representation of the finished application.
+### AI Result
 
-![AI Document Analyzer](docs/images/README.png)
+![AI Result](docs/images/ai-result.png)
+
+### Without AI
+
+![Result Without AI](docs/images/without-ai-result.png)
 
 ## Development
 
@@ -193,58 +197,5 @@ Once the backend is running, Swagger can be used to inspect the available API en
 
 ## Configuration
 
-Cloud services and AI models require appropriate configuration values.
-
-Credentials and API keys should not be committed to the repository.
-
-Use environment variables or the configuration mechanisms provided by the development environment.
-
-## AI Workflow
-
-The complete document-analysis workflow can be summarized as:
-
-```text
-User Upload
-    │
-    ▼
-Frontend
-    │
-    ▼
-ASP.NET Core API
-    │
-    ▼
-Document Extraction
-    │
-    ▼
-AI Processing
-    │
-    ▼
-Analysis Result
-    │
-    ▼
-Frontend
-```
-
-## Possible Improvements
-
-Possible future extensions include:
-
-* Additional document formats
-* More AI analysis workflows
-* Improved document search
-* Additional extraction models
-* Authentication and user accounts
-* More detailed result visualizations
-* Automated integration tests
-* Additional cloud deployment options
-
-## Project Purpose
-
-The project demonstrates how modern web technologies, document intelligence, and generative AI can be combined into a practical document-analysis application.
-
-It connects a React frontend with an ASP.NET Core backend and external AI/document-processing services.
-
-## Author
-
-**Markus**
+Cloud services and AI mode
 
